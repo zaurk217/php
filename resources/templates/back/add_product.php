@@ -10,10 +10,7 @@
 </h1>
 </div>
                
-
-
 <form action="" method="post" enctype="multipart/form-data">
-
 
 <div class="col-md-8">
 
@@ -23,13 +20,10 @@
        
     </div>
 
-
     <div class="form-group">
            <label for="product-title">Product Description</label>
       <textarea name="product_description" id="" cols="30" rows="10" class="form-control"></textarea>
     </div>
-
-
 
     <div class="form-group row">
 
@@ -38,18 +32,11 @@
         <input type="number" name="product_price" class="form-control" size="60">
       </div>
     </div>
-
-
-
-
-    
-    
+   
 
 </div><!--Main Content-->
 
-
 <!-- SIDEBAR-->
-
 
 <aside id="admin_sidebar" class="col-md-4">
 
@@ -73,10 +60,6 @@
 
 </div>
 
-
-
-
-
     <!-- Product Brands-->
 
 
@@ -87,9 +70,7 @@
          </select>
     </div>
 
-
 <!-- Product Tags -->
-
 
     <div class="form-group">
           <label for="product-title">Product Keywords</label>
@@ -105,17 +86,6 @@
     </div>
 
 
-
 </aside><!--SIDEBAR-->
-
-
     
 </form>
-
-
-
-                
-
-
-
-            
