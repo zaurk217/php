@@ -64,11 +64,12 @@ function get_products(){
     $query = query("SELECT * FROM products");
     confirm($query);
     while ($row = fetch_array($query)) {
+    $product_image = display_image($row['product_image']);    
         
     $product = <<<DELIMETER
          <div class="col-sm-4 col-lg-4 col-md-4">
              <div class="thumbnail">
-                 <a href="item.php?id={$row['product_id']}"><img src="{$row['product_image']}" alt=""></a>
+                 <a href="item.php?id={$row['product_id']}"><img src="../resources/{$product_image}" alt=""></a>
                  <div class="caption">
                      <h4 class="pull-right">{$row['product_price']}</h4>
                      <h4><a href="item.php?id={$row['product_id']}">{$row['product_title']}</a>
@@ -225,20 +226,22 @@ echo $orders;
     }
 }
 
-/************************ ADMIN PRODUCTS**********************************************/
+/************************ ADMIN PRODUCTS **********************************************/
 
 function get_products_in_admin(){
 $query = query("SELECT * FROM products");
     confirm($query);
     while ($row = fetch_array($query)) {
-        
+    $category = show_product_category_title($row['product_category_id']);
+    $product_image = display_image($row['product_image']); 
+
     $product = <<<DELIMETER
          <tr>
             <td>{$row['product_id']}</td>
             <td>{$row['product_title']}<br>
-            <a href="index.php?edit_product&id={$row['product_id']}"><img src="{$row['product_image']}" alt=""></a>
+            <a href="index.php?edit_product&id={$row['product_id']}"><img width='100' src="../../resources/{$product_image}" alt=""></a>
             </td>
-            <td>Category</td>
+            <td>{$category}</td>
             <td>{$row['product_price']}</td>
             <th>{$row['product_quantity']}</th>
             <td><a class="btn btn-danger" href="../../resources/templates/back/delete_product.php?id={$row['product_id']}"><span class="glyphicon glyphicon-remove"></span></a></td>
@@ -251,6 +254,21 @@ DELIMETER;
 }
 
 
+function show_product_category_title($product_category_id){
+$category_query = query("SELECT * FROM categories WHERE cat_id = '{$product_category_id}' ");
+confirm($category_query);
+
+while ($category_row = fetch_array($category_query)) {
+    return $category_row['cat_title']; 
+  }
+}
+
+
+function display_image($picture){
+    return "uploads" . DS . $picture;
+
+}
+
 /************************ ADDING PRODUCTS IN ADMIN PRODUCTS**********************************************/
 
 
@@ -261,10 +279,37 @@ function add_product(){
         $product_price       = escape_string($_POST['product_price']);
         $product_description = escape_string($_POST['product_description']);
         $product_short_desc  = escape_string($_POST['short_desc']);
-        $product_quantity    = escape_string($_POST['quantity']);
+        $product_quantity    = escape_string($_POST['product_quantity']);
         $product_image       = escape_string($_FILES['file']['name']);
         $image_temp_location = escape_string($_FILES['file']['tmp_name']);
+
+    move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $product_image);
+
+
+    $query = query("INSERT INTO products(product_title, product_category_id, product_price, product_quantity, product_description, short_desc, product_image) VALUES('{$product_title}','{$product_category_id}','{$product_price}','{$product_quantity}','{$product_description}','{$product_short_desc}','{$product_image}')");
+    $last_id = last_id();
+    confirm($query);
+    set_message("New Product With Id {$last_id} Added Successfully");
+    redirect("index.php?products");
     }
+}
+
+
+function show_categories_add_product_page(){
+    $query = query("SELECT * FROM categories");    
+    confirm($query);
+    while ($row = fetch_array($query)) {
+            
+    $category_options = <<<DELIMETER
+         
+    <option value="{$row['cat_id']}">{$row['cat_title']}</option>
+                 
+DELIMETER;
+
+    echo $category_options;
+            
+    }
+
 }
 
 ?>
