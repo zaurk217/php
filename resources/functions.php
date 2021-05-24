@@ -93,22 +93,22 @@ function get_products_in_cat_page(){
     $query = query("SELECT * FROM products WHERE product_category_id = " . escape_string($_GET['id']) . "");
     confirm($query);
     while ($row = fetch_array($query)) {
-        
+    $product_image = display_image($row['product_image']);    
     $product = <<<DELIMETER
          <div class="col-md-3 col-sm-6 hero-feature">
                 <div class="thumbnail">
-                    <img src="{$row['product_image']}" alt="">
+                    <img src="../resources/{$product_image}" alt="">
                     <div class="caption">
                         <h3>{$row['product_title']}</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                         <p>
-                            <a href="#" class="btn btn-primary">Buy Now!</a> <a href="item.php?id={$row['product_id']}" class="btn btn-default">More Info</a>
+                            <a href="../resources/cart.php?add={$row['product_id']}" class="btn btn-primary">Buy Now!</a> <a href="item.php?id={$row['product_id']}" class="btn btn-default">More Info</a>
                         </p>
                     </div>
                 </div>
             </div>
 
-    DELIMETER;
+DELIMETER;
 
     echo $product;
 
@@ -120,22 +120,22 @@ function get_products_in_shop_page(){
     $query = query("SELECT * FROM products");
     confirm($query);
     while ($row = fetch_array($query)) {
-        
+    $product_image = display_image($row['product_image']);    
     $product = <<<DELIMETER
          <div class="col-md-3 col-sm-6 hero-feature">
                 <div class="thumbnail">
-                    <img src="{$row['product_image']}" alt="">
+                    <img src="../resources/{$product_image}" alt="">
                     <div class="caption">
                         <h3>{$row['product_title']}</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                         <p>
-                            <a href="#" class="btn btn-primary">Buy Now!</a> <a href="item.php?id={$row['product_id']}" class="btn btn-default">More Info</a>
+                            <a href="../resources/cart.php?add={$row['product_id']}" class="btn btn-primary">Buy Now!</a> <a href="item.php?id={$row['product_id']}" class="btn btn-default">More Info</a>
                         </p>
                     </div>
                 </div>
             </div>
 
-    DELIMETER;
+DELIMETER;
 
     echo $product;
 
@@ -152,13 +152,10 @@ function get_categories(){
          
     <a href='category.php?id={$row['cat_id']}' class='list-group-item'>{$row['cat_title']}</a>
                  
+DELIMETER;
 
-    DELIMETER;
-
-    echo $category_links;
-            
+    echo $category_links;       
     }
-
 }
 
 
@@ -283,13 +280,56 @@ function add_product(){
         $product_image       = escape_string($_FILES['file']['name']);
         $image_temp_location = escape_string($_FILES['file']['tmp_name']);
 
-    move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $product_image);
-
+    //move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $product_image);
+    copy($image_temp_location, UPLOAD_DIRECTORY . DS . $product_image);
 
     $query = query("INSERT INTO products(product_title, product_category_id, product_price, product_quantity, product_description, short_desc, product_image) VALUES('{$product_title}','{$product_category_id}','{$product_price}','{$product_quantity}','{$product_description}','{$product_short_desc}','{$product_image}')");
     $last_id = last_id();
     confirm($query);
     set_message("New Product With Id {$last_id} Added Successfully");
+    redirect("index.php?products");
+    }
+}
+
+
+/************************ UPDATING PRODUCTS IN ADMIN PRODUCTS**********************************************/
+
+function update_product(){
+    if (isset($_POST['update'])) {      
+        $product_title       = escape_string($_POST['product_title']);
+        $product_category_id = escape_string($_POST['product_category_id']);
+        $product_price       = escape_string($_POST['product_price']);
+        $product_description = escape_string($_POST['product_description']);
+        $product_short_desc  = escape_string($_POST['short_desc']);
+        $product_quantity    = escape_string($_POST['product_quantity']);
+        $product_image       = escape_string($_FILES['file']['name']);
+        $image_temp_location = escape_string($_FILES['file']['tmp_name']);
+
+    if (empty($product_image)) {
+        $get_pic = query("SELECT product_image FROM products WHERE product_id =" . escape_string($_GET['id']) . "");
+        confirm($get_pic);
+
+        while ($pic = fetch_array($get_pic)) {
+            $product_image = $pic['product_image'];
+        }
+    }
+
+        //$image_name = date("YmdHisu");
+    //move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $product_image);
+    copy($image_temp_location, UPLOAD_DIRECTORY . DS . $product_image);
+
+    $query = "UPDATE products SET ";
+    $query .= "product_title       = '{$product_title}', ";
+    $query .= "product_category_id = '{$product_category_id}', ";
+    $query .= "product_price       = '{$product_price}', ";
+    $query .= "product_quantity    = '{$product_quantity}', ";
+    $query .= "product_description = '{$product_description}', ";
+    $query .= "short_desc          = '{$product_short_desc}', ";
+    $query .= "product_image       = '{$product_image}' ";
+    $query .= "WHERE product_id=" . escape_string($_GET['id']);
+    $send_update_query = query($query);
+    confirm($send_update_query);
+    set_message("Product Has Been Updated");
     redirect("index.php?products");
     }
 }
@@ -310,6 +350,45 @@ DELIMETER;
             
     }
 
+}
+
+
+function show_categories_in_admin(){
+    $query = "SELECT * FROM categories";
+    $category_query = query($query);
+    confirm($category_query);
+
+    while ($row = fetch_array($category_query)) {
+       $cat_id    = $row['cat_id'];
+       $cat_title = $row['cat_title'];
+
+       $category = <<<DELIMETER
+
+       <tr>
+           <td>{$cat_id}</td> 
+           <td>{$cat_title}</td>
+           <td><a class="btn btn-danger" href="../../resources/templates/back/delete_category.php?id={$row['cat_id']}"><span class="glyphicon glyphicon-remove"></span></a></td> 
+       </tr>
+
+DELIMETER;
+
+    echo $category;
+  }
+}
+
+
+function add_category(){
+    if (isset($_POST['add_category'])) {
+        $cat_title = escape_string($_POST['cat_title']);
+        if (empty($cat_title) || $cat_title == " ") {
+            echo "<h3 class='bg-danger'>Category Title Cannot Be Empty!</h3>";
+        } else {
+
+        $insert_cat = query("INSERT INTO categories(cat_title) VALUES('{$cat_title}')");
+        confirm($insert_cat);
+        set_message("New Category" . " " . $cat_title . " Added Successfully");
+        }
+    }
 }
 
 ?>
