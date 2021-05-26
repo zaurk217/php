@@ -1,6 +1,5 @@
 <?php require_once("../resources/config.php"); ?>
 
-
 <?php
 
 if (isset($_GET['add'])) {
@@ -13,7 +12,6 @@ if (isset($_GET['add'])) {
        } else {
             set_message("We only have" . " " . $row['product_quantity'] . " " . $row['product_title'] . "available");
             redirect("checkout.php");    
-
        }
     }
 
@@ -22,10 +20,8 @@ if (isset($_GET['add'])) {
  // redirect("index.php");
 }
 
-
 if (isset($_GET['remove'])) {
-    $_SESSION['product_' . $_GET['remove']]--;
-    
+    $_SESSION['product_' . $_GET['remove']]--;    
     if ($_SESSION['product_' . $_GET['remove']] < 1) {
         unset($_SESSION['item_total']);
         unset($_SESSION['item_quantity']);
@@ -35,7 +31,6 @@ if (isset($_GET['remove'])) {
     }
 }
 
-
 if (isset($_GET['delete'])) {
     $_SESSION['product_' . $_GET['delete']] = '0';
     unset($_SESSION['item_total']);
@@ -43,10 +38,7 @@ if (isset($_GET['delete'])) {
     redirect("checkout.php");
 }
 
-
-
 function cart(){
-
 $total = 0;
 $item_quantity = 0;
 $item_name = 1;
@@ -56,14 +48,11 @@ $quantity = 1;
 
 foreach ($_SESSION as $name => $value) {
     if ($value > 0) {
-
         if (substr($name, 0, 8) == "product_") {
-
         $lenght = strlen((int)$name - 8);
         $id = substr($name, 8, $lenght);    
         $query = query("SELECT * FROM products WHERE product_id = " . escape_string($id) . "");
         confirm($query);
-
 while ($row = fetch_array($query)) {
 
 $sub = $row['product_price'] * $value;
@@ -99,12 +88,9 @@ $quantity++;
 $_SESSION['item_total'] = $total += $sub;
 $_SESSION['item_quantity'] = $item_quantity;
 
-      }
-        
+      }        
     }
-
   }
-
 }
 
 function show_paypal(){
@@ -120,9 +106,7 @@ $paypal_button = <<<DELIMETER
 DELIMETER;
 
 return $paypal_button;
-
     }
-
 }
 
 

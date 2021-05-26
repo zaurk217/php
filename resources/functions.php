@@ -38,7 +38,6 @@ function set_message($msg){
     } else {
         $msg = "";
     }
-
 }
 
 
@@ -47,7 +46,6 @@ function display_message(){
         echo $_SESSION['message'];
         unset($_SESSION['message']);
     }
-
 }
 
 function last_id(){
@@ -85,7 +83,7 @@ function get_products(){
 
     echo $product;
 
-        }   
+    }   
 }
 
 
@@ -112,7 +110,7 @@ DELIMETER;
 
     echo $product;
 
-        }   
+    }   
 }
 
 
@@ -139,7 +137,7 @@ DELIMETER;
 
     echo $product;
 
-        }   
+    }   
 }
 
 
@@ -160,7 +158,6 @@ DELIMETER;
 
 
 function login_user(){
-
     if (isset($_POST['submit'])) {
         $username = escape_string($_POST['username']);
         $password = escape_string($_POST['password']);
@@ -175,7 +172,6 @@ function login_user(){
         redirect("admin");
         }
     }
-
 }
 
 
@@ -198,7 +194,6 @@ function send_message(){
             set_message("Your message has been sent");
         }
     }
-
 }
 
 /***************************BACK END FUNCTIONS*************************************/
@@ -246,15 +241,13 @@ $query = query("SELECT * FROM products");
 DELIMETER;
 
     echo $product;
-
-        }   
+    }   
 }
 
 
 function show_product_category_title($product_category_id){
 $category_query = query("SELECT * FROM categories WHERE cat_id = '{$product_category_id}' ");
 confirm($category_query);
-
 while ($category_row = fetch_array($category_query)) {
     return $category_row['cat_title']; 
   }
@@ -263,7 +256,6 @@ while ($category_row = fetch_array($category_query)) {
 
 function display_image($picture){
     return "uploads" . DS . $picture;
-
 }
 
 /************************ ADDING PRODUCTS IN ADMIN PRODUCTS**********************************************/
@@ -304,11 +296,9 @@ function update_product(){
         $product_quantity    = escape_string($_POST['product_quantity']);
         $product_image       = escape_string($_FILES['file']['name']);
         $image_temp_location = escape_string($_FILES['file']['tmp_name']);
-
     if (empty($product_image)) {
         $get_pic = query("SELECT product_image FROM products WHERE product_id =" . escape_string($_GET['id']) . "");
         confirm($get_pic);
-
         while ($pic = fetch_array($get_pic)) {
             $product_image = $pic['product_image'];
         }
@@ -346,10 +336,8 @@ function show_categories_add_product_page(){
                  
 DELIMETER;
 
-    echo $category_options;
-            
+    echo $category_options;         
     }
-
 }
 
 
@@ -357,7 +345,6 @@ function show_categories_in_admin(){
     $query = "SELECT * FROM categories";
     $category_query = query($query);
     confirm($category_query);
-
     while ($row = fetch_array($category_query)) {
        $cat_id    = $row['cat_id'];
        $cat_title = $row['cat_title'];
@@ -383,11 +370,75 @@ function add_category(){
         if (empty($cat_title) || $cat_title == " ") {
             echo "<h3 class='bg-danger'>Category Title Cannot Be Empty!</h3>";
         } else {
-
         $insert_cat = query("INSERT INTO categories(cat_title) VALUES('{$cat_title}')");
         confirm($insert_cat);
         set_message("New Category" . " " . $cat_title . " Added Successfully");
         }
+    }
+}
+
+
+/*************************************** ADMIN USERS ***************************************/
+
+function display_users_in_admin(){
+    $query = "SELECT * FROM users";
+    $users_query = query($query);
+    confirm($users_query);
+    while ($row = fetch_array($users_query)) {
+       $user_id    = $row['user_id'];
+       $username   = $row['username'];
+       $password   = $row['password'];
+       $email      = $row['email'];
+
+       $user = <<<DELIMETER
+
+       <tr>
+           <td>{$user_id}</td> 
+           <td>{$username}</td>
+           <td>{$email}</td>
+           <td><a class="btn btn-danger" href="../../resources/templates/back/delete_user.php?id={$row['user_id']}"><span class="glyphicon glyphicon-remove"></span></a>
+               <a class="btn btn-warning" href="index.php?edit_user&id={$row['user_id']}"><span class="glyphicon glyphicon-pencil"></span></a></td> 
+       </tr>
+
+DELIMETER;
+
+    echo $user;
+  }
+}
+
+
+function add_user(){
+    if (isset($_POST['add_user'])) {
+    $username   = escape_string($_POST['username']);
+    $password   = escape_string($_POST['password']);
+    $email      = escape_string($_POST['email']);
+    $user_photo = escape_string($_FILES['file']['name']);
+    $photo_temp = escape_string($_FILES['file']['tmp_name']);
+    move_uploaded_file($photo_temp, UPLOAD_DIRECTORY . DS . $user_photo);
+
+    $query = query("INSERT INTO users(username,password,email,user_photo) VALUES('{$username}','{$password}','{$email}','{$user_photo}' )");
+    confirm($query);
+    set_message("USER CREATED");
+    redirect("index.php?users");
+
+    }
+}
+
+
+function edit_user(){
+    if (isset($_POST['edit_user'])) {
+    $username   = escape_string($_POST['username']);
+    $password   = escape_string($_POST['password']);
+    $email      = escape_string($_POST['email']);
+    $user_photo = escape_string($_FILES['file']['name']);
+    $photo_temp = escape_string($_FILES['file']['tmp_name']);
+    move_uploaded_file($photo_temp, UPLOAD_DIRECTORY . DS . $user_photo);
+
+    $query = query("UPDATE users SET username = '{$username}', password = '{$password}', email = '{$email}', user_photo = '{$user_photo}' WHERE user_id=" . escape_string($_GET['id']));
+    confirm($query);
+    set_message("USER UPDATED");
+    redirect("index.php?users");
+
     }
 }
 
