@@ -8,6 +8,9 @@
             <a href="index.php?orders"><i class="fa fa-fw fa-bar-chart-o"></i> Orders</a>
         </li>
         <li>
+            <a href="index.php?reports"><i class="fa fa-fw fa-bar-chart-o"></i> Reports</a>
+        </li>
+        <li>
             <a href="index.php?products"><i class="fa fa-fw fa-bar-chart-o"></i> View Products</a>
         </li>
         <li>
