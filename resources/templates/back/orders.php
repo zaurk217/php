@@ -19,6 +19,7 @@
            <th>Transaction</th>
            <th>Status</th>
            <th>Currency</th>
+           <th>Action</th>
       </tr>
     </thead>
     <tbody>
