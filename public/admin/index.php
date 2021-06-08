@@ -55,6 +55,14 @@ if (!isset($_SESSION['username'])) {
                     include(TEMPLATE_BACK . "/reports.php");
                 }
 
+                if (isset($_GET['slides'])) {
+                    include(TEMPLATE_BACK . "/slides.php");
+                }
+
+                 if (isset($_GET['delete_slide_id'])) {
+                    include(TEMPLATE_BACK . "/delete_slide.php");
+                }
+
                 ?>
 
             </div>

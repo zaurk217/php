@@ -48,6 +48,7 @@ function display_message(){
     }
 }
 
+
 function last_id(){
    global $connection; 
    return mysqli_insert_id($connection);
@@ -67,7 +68,7 @@ function get_products(){
     $product = <<<DELIMETER
          <div class="col-sm-4 col-lg-4 col-md-4">
              <div class="thumbnail">
-                 <a href="item.php?id={$row['product_id']}"><img src="../resources/{$product_image}" alt=""></a>
+                 <a href="item.php?id={$row['product_id']}"><img style="height: 150px" src="../resources/{$product_image}" alt=""></a>
                  <div class="caption">
                      <h4 class="pull-right">{$row['product_price']}</h4>
                      <h4><a href="item.php?id={$row['product_id']}">{$row['product_title']}</a>
@@ -105,7 +106,6 @@ function get_products_in_cat_page(){
                     </div>
                 </div>
             </div>
-
 DELIMETER;
 
     echo $product;
@@ -132,7 +132,6 @@ function get_products_in_shop_page(){
                     </div>
                 </div>
             </div>
-
 DELIMETER;
 
     echo $product;
@@ -149,7 +148,6 @@ function get_categories(){
     $category_links = <<<DELIMETER
          
     <a href='category.php?id={$row['cat_id']}' class='list-group-item'>{$row['cat_title']}</a>
-                 
 DELIMETER;
 
     echo $category_links;       
@@ -333,7 +331,6 @@ function show_categories_add_product_page(){
     $category_options = <<<DELIMETER
          
     <option value="{$row['cat_id']}">{$row['cat_title']}</option>
-                 
 DELIMETER;
 
     echo $category_options;         
@@ -356,7 +353,6 @@ function show_categories_in_admin(){
            <td>{$cat_title}</td>
            <td><a class="btn btn-danger" href="../../resources/templates/back/delete_category.php?id={$row['cat_id']}"><span class="glyphicon glyphicon-remove"></span></a></td> 
        </tr>
-
 DELIMETER;
 
     echo $category;
@@ -399,7 +395,6 @@ function display_users_in_admin(){
            <td><a class="btn btn-danger" href="../../resources/templates/back/delete_user.php?id={$row['user_id']}"><span class="glyphicon glyphicon-remove"></span></a>
                <a class="btn btn-warning" href="index.php?edit_user&id={$row['user_id']}"><span class="glyphicon glyphicon-pencil"></span></a></td> 
        </tr>
-
 DELIMETER;
 
     echo $user;
@@ -463,5 +458,102 @@ DELIMETER;
     echo $reports;
     }   
 }
+
+
+/************************* SLIDE FUNCTIONS *************************/
+
+function add_slides(){
+    if (isset($_POST['add_slide'])) {
+        $slide_title     = escape_string($_POST['slide_title']);
+        $slide_image     = escape_string($_FILES['file']['name']);
+        $slide_image_loc = escape_string($_FILES['file']['tmp_name']);
+
+        if (empty($slide_title) || empty($slide_image)) {
+            echo "<p class='bg-danger'>This Field Canno't Be Empty!!!</p>";       
+        } else {
+            //move_uploaded_file($slide_image_loc, UPLOAD_DIRECTORY . DS . $slide_image);
+            copy($slide_image_loc, UPLOAD_DIRECTORY . DS . $slide_image);
+
+            $query = query("INSERT INTO slides(slide_title, slide_image) VALUES('{$slide_title}', '{$slide_image}')");
+            confirm($query);
+            set_message("Slide Added");
+            redirect("index.php?slides");
+        }
+    }
+}
+
+
+function get_current_slide_in_admin(){
+    $query = query("SELECT * FROM slides ORDER BY slide_id DESC LIMIT 1");
+    confirm($query);
+    while ($row = fetch_array($query)) {
+    $slide_image = display_image($row['slide_image']);    
+    $slide_active_admin = <<<DELIMETER
+      
+        <img class="img-responsive" src="../../resources/{$slide_image}" alt="">
+DELIMETER;    
+
+echo $slide_active_admin;        
+    }
+}
+
+
+function get_active_slide(){
+    $query = query("SELECT * FROM slides ORDER BY slide_id DESC LIMIT 1");
+    confirm($query);
+    while ($row = fetch_array($query)) {
+    $slide_image = display_image($row['slide_image']);    
+    $slide_active = <<<DELIMETER
+    
+    <div class="item active">
+        <img class="slide-image" src="../resources/{$slide_image}" alt="">
+    </div>
+DELIMETER;    
+
+echo $slide_active;        
+    }
+}
+
+
+function get_slides(){
+    $query = query("SELECT * FROM slides");
+    confirm($query);
+    while ($row = fetch_array($query)) {
+    $slide_image = display_image($row['slide_image']);    
+    $slides = <<<DELIMETER
+    
+    <div class="item">
+        <img class="slide-image" src="../resources/{$slide_image}" alt="">
+    </div>
+DELIMETER;    
+
+echo $slides;        
+    }
+}
+
+
+function get_slide_thubnails(){
+    $query = query("SELECT * FROM slides ORDER BY slide_id ASC ");
+    confirm($query);
+    while ($row = fetch_array($query)) {
+    $slide_image = display_image($row['slide_image']);    
+    $slide_thumb_admin = <<<DELIMETER
+    
+        <div class="col-xs-6 col-md-3 image_container">
+            <a href="index.php?delete_slide_id={$row['slide_id']}">
+                <img class="img-responsive slide_image" src="../../resources/{$slide_image}" alt="">
+            </a>
+            <div class="caption">
+                <p>{$row['slide_title']}</p>
+            </div>
+
+        </div>
+DELIMETER;    
+
+echo $slide_thumb_admin;        
+    }
+}
+
+
 
 ?>

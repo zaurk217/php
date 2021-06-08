@@ -48,7 +48,7 @@ $quantity = 1;
 foreach ($_SESSION as $name => $value) {
     if ($value > 0) {
         if (substr($name, 0, 8) == "product_") {
-        $lenght = strlen((int)$name - 8);
+        $lenght = strlen($name);
         $id = substr($name, 8, $lenght);    
         $query = query("SELECT * FROM products WHERE product_id = " . escape_string($id) . "");
         confirm($query);
@@ -87,11 +87,10 @@ $item_number++;
 $amount++;
 $quantity++;
 
-       }
-
 $_SESSION['item_total'] = $total += $sub;
-$_SESSION['item_quantity'] = $item_quantity;
-
+$_SESSION['item_quantity'] = $item_quantity; 
+       
+        }
       }   
     }
   }
@@ -128,7 +127,7 @@ $item_quantity = 0;
 foreach ($_SESSION as $name => $value) {
     if ($value > 0) {
         if (substr($name, 0, 8) == "product_") {
-        $lenght = strlen((int)$name - 8);
+        $lenght = strlen($name);
         $id = substr($name, 8, $lenght);
         $send_order = query("INSERT INTO orders (order_amount, order_transaction, order_status, order_currency) VALUES('{$amount}','{$transaction}','{$status}','{$currency}')");
         $last_id = last_id();
