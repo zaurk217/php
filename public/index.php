@@ -24,7 +24,7 @@
                 <div class="row">
 
 
-                    <?php get_products(); ?>
+                    <?php get_products_with_pagination(); ?>
 
 
                 </div>

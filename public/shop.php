@@ -18,7 +18,7 @@
         <!-- Page Features -->
         <div class="row text-center">
 
-            <?php get_products_in_shop_page(); ?>
+            <?php get_products_with_pagination(); ?>
             
         </div>
         <!-- /.row -->
